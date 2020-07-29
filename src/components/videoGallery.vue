@@ -1,12 +1,11 @@
 <template>
   <div class="hello">
-    <h2>Games Gallery</h2>
     <div class="container">
       <div class="gamesGallery">
-        <div v-for="(video, index) in videos" :key="index">
+        <div v-for="(video, index) in searchGame" :key="index">
           <router-link :to="{ name: 'highlightVideo', params: { id: video.title } }">
-            <p>{{ video.title }}</p>
-            <p>{{video.date}}</p>
+            <p class="match-teams">{{ video.title }}</p>
+            <p class="match-date">{{ video.date }}</p>
 
             <img :src="video.thumbnail" class="videoThumb" />
           </router-link>
@@ -20,12 +19,14 @@
 import axios from "axios";
 export default {
   name: "videoGallery",
+  props: ["searchQuery"],
 
   data() {
     return {
       loading: false,
       videos: [],
-      id: null
+      id: null,
+      newDateFormat: null
     };
   },
   methods: {
@@ -37,11 +38,11 @@ export default {
           let dateFormat = game.date;
           game.ind = index;
           this.getDate(dateFormat);
+          game.date = this.newDateFormat;
           this.videos.push(game);
         });
         this.videos.forEach(i => {
           this.id = i.title;
-          console.log(this.id);
         });
       });
     },
@@ -65,35 +66,39 @@ export default {
       ] = dateTimeFormat.formatToParts(date);
 
       // this.dates.push(`${day}-${month}-${year}`);
-      return day, month, year;
 
-      // console.log(`${day}-${month}-${year}`);
+      this.newDateFormat = `${day}-${month}-${year}`;
     }
   },
   beforeMount() {
     this.fetchVideo();
   },
-  computed() {}
+  computed: {
+    searchGame() {
+      // const searchInput = document.querySelector(".input-search input");
+      // return searchInput.addEventListener("input", (e) => {
+      //   this.searchQuery = e.target.value;
+      return this.videos.filter(game => {
+        // console.log(game.title);
+        // console.log(this.searchQuery);
+        return game.title.toLowerCase().match(this.searchQuery.toLowerCase());
+      });
+      // });
+    }
+  }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+body {
+  font-family: "Lato", sans-serif;
 }
 
+a {
+  text-decoration: none;
+  color: black;
+}
 .gamesGallery {
   display: grid;
   grid-gap: 20px;
@@ -108,14 +113,29 @@ a {
   background: #f6f6f6;
   border-radius: 5px;
   min-height: 300px;
+  text-align: center;
+  padding: 15px;
+  margin-bottom: 15px;
 }
 
 .container {
-  width: 95vw;
+  width: 90vw;
   margin: 0 auto;
 }
 
 .videoThumb {
-  width: 50%;
+  width: 80%;
+  border-radius: 5px;
+  object-fit: cover;
+  filter: contrast(120%);
+}
+
+.match-date {
+  margin-bottom: 2rem;
+}
+
+.match-teams {
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 </style>
