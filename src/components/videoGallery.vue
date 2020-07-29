@@ -3,7 +3,9 @@
     <div class="container">
       <div class="gamesGallery">
         <div v-for="(video, index) in searchGame" :key="index">
-          <router-link :to="{ name: 'highlightVideo', params: { id: video.title } }">
+          <router-link
+            :to="{ name: 'highlightVideo', params: { id: video.title } }"
+          >
             <p class="match-teams">{{ video.title }}</p>
             <p class="match-date">{{ video.date }}</p>
 
@@ -26,13 +28,13 @@ export default {
       loading: false,
       videos: [],
       id: null,
-      newDateFormat: null
+      newDateFormat: null,
     };
   },
   methods: {
     fetchVideo() {
       this.loading = true;
-      axios.get("https://www.scorebat.com/video-api/v1/").then(res => {
+      axios.get("https://www.scorebat.com/video-api/v1/").then((res) => {
         let allGames = res.data;
         allGames.forEach((game, index) => {
           let dateFormat = game.date;
@@ -41,7 +43,7 @@ export default {
           game.date = this.newDateFormat;
           this.videos.push(game);
         });
-        this.videos.forEach(i => {
+        this.videos.forEach((i) => {
           this.id = i.title;
         });
       });
@@ -55,20 +57,20 @@ export default {
       const dateTimeFormat = new Intl.DateTimeFormat("en", {
         year: "numeric",
         month: "short",
-        day: "2-digit"
+        day: "2-digit",
       });
       const [
         { value: month },
         ,
         { value: day },
         ,
-        { value: year }
+        { value: year },
       ] = dateTimeFormat.formatToParts(date);
 
       // this.dates.push(`${day}-${month}-${year}`);
 
-      this.newDateFormat = `${day}-${month}-${year}`;
-    }
+      this.newDateFormat = `${month}-${day}-${year}`;
+    },
   },
   beforeMount() {
     this.fetchVideo();
@@ -78,14 +80,14 @@ export default {
       // const searchInput = document.querySelector(".input-search input");
       // return searchInput.addEventListener("input", (e) => {
       //   this.searchQuery = e.target.value;
-      return this.videos.filter(game => {
+      return this.videos.filter((game) => {
         // console.log(game.title);
         // console.log(this.searchQuery);
         return game.title.toLowerCase().match(this.searchQuery.toLowerCase());
       });
       // });
-    }
-  }
+    },
+  },
 };
 </script>
 
